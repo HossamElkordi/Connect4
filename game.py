@@ -21,13 +21,13 @@ class Game:
     def game_loop(self, work):
         players = List[Player]
         if work == 1:
-            self.scoring = ScoreScheme('min_max')
+            self.scoring = ScoreScheme('min_max', int(self.current_menu.choiceMenu.maxDepth))
             players = [Human(), Computer()]
         elif work == 2:
-            self.scoring = ScoreScheme('exp_max')
+            self.scoring = ScoreScheme('alpha_beta', int(self.current_menu.choiceMenu.maxDepth))
             players = [Human(), Computer()]
         elif work == 3:
-            players = [Human(), Human(2)]
+            players = [Human(), Human(False)]
         turn = 0
         game_board = Board(self.screen)
 

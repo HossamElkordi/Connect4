@@ -2,7 +2,7 @@ import pygame
 
 
 class Menu:
-    def __init__(self, game):
+    def __init__(self, game, max_depth=None):
         self.game = game
         self.menus = True
         self.states = []
@@ -12,6 +12,7 @@ class Menu:
         self.cur_surface = pygame.Rect(0, 0, 20, 20)
         self.back_img = pygame.image.load('res/Images/logo.png')
         self.back_img = pygame.transform.scale(self.back_img, (self.game.w, self.game.h))
+        self.maxDepth = max_depth
 
     def draw_cursor(self):
         self.game.draw_text('>>', 15, self.cur_surface.x, self.cur_surface.y)
@@ -39,10 +40,20 @@ class Menu:
                     self.move_cursor_down()
                     return -2
                 elif e.key == pygame.K_RETURN:
-                    return self.cur
+                    if self.maxDepth is not None:
+                        if len(self.maxDepth) > 0 and self.maxDepth.isdigit():
+                            return self.cur
+                    else:
+                        return self.cur
                 elif e.key == pygame.K_ESCAPE:
                     self.menus = False
                     return -3
+                elif self.cur == 3:
+                    if e.key == pygame.K_BACKSPACE:
+                        self.maxDepth = self.maxDepth[0:-1]
+                    elif e.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7,
+                                   pygame.K_8, pygame.K_9, pygame.K_0]:
+                        self.maxDepth += e.unicode
 
 
 class MainMenu(Menu):
@@ -92,11 +103,14 @@ class MainMenu(Menu):
 
 class AlgorithmMenu(Menu):
     def __init__(self, game):
-        super().__init__(game)
-        self.states.extend(['Min-Max', 'Expect-Max', 'Back'])
+        super().__init__(game, '')
+        self.states.extend(['Standard Min-Max', 'Alpha-Beta Pruning', 'Back', 'Max Depth: '])
         self.xMin, self.yMin = self.menu_x, self.menu_y
-        self.xExp, self.yExp = self.menu_x, self.menu_y + 20
+        self.xAB, self.yAB = self.menu_x, self.menu_y + 20
         self.xBack, self.yBack = self.menu_x, self.menu_y + 40
+        self.xMD, self.yMD = self.menu_x, self.menu_y + 60
+        self.input_rect = pygame.Rect(self.menu_x + 70, self.menu_y + 60, 70, 20)
+        self.input_rect_back = pygame.Rect(self.menu_x + 70, self.menu_y + 60, 70, 20)
         self.cur_surface.midtop = (self.menu_x - 10, self.menu_y)
 
     def check_choose(self):
@@ -121,8 +135,12 @@ class AlgorithmMenu(Menu):
             self.game.screen.blit(self.back_img, (0, 0))
             self.game.draw_text('Choose Algorithm', 20, self.menu_x, self.menu_y - 30)
             self.game.draw_text(self.states[0], 20, self.xMin, self.yMin)
-            self.game.draw_text(self.states[1], 20, self.xExp, self.yExp)
+            self.game.draw_text(self.states[1], 20, self.xAB, self.yAB)
             self.game.draw_text(self.states[2], 20, self.xBack, self.yBack)
+            self.game.draw_text(self.states[3], 20, self.xMD, self.yMD)
             self.draw_cursor()
+            pygame.draw.rect(self.game.screen, (255, 255, 255), self.input_rect_back)
+            pygame.draw.rect(self.game.screen, (255, 0, 0), self.input_rect, 2)
+            self.game.draw_text(self.maxDepth, 18, self.input_rect.x + 5, self.input_rect.y)
             pygame.display.update()
         return ret

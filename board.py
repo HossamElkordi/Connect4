@@ -12,7 +12,7 @@ def draw_yellow_piece(screen, i, j, piece_col_base, piece_row_base, offset):
 
 class Board:
     def __init__(self, screen):
-        self.board = np.zeros((6, 7))
+        self.board = np.zeros((6, 7), dtype=bool)
         self.col_pos = np.ones(7) * 5
         self.piece_col_base, self.piece_row_base, self.offset = 36, 99, 70
         self.screen = screen
@@ -26,9 +26,11 @@ class Board:
     def update_board(self):
         for i in range(6):
             for j in range(7):
-                if self.board[i, j] == 1:
+                if i <= self.col_pos[j]:
+                    continue
+                if self.board[i, j]:
                     draw_red_piece(self.screen, i, j, self.piece_col_base, self.piece_row_base, self.offset)
-                elif self.board[i, j] == 2:
+                elif not self.board[i, j]:
                     draw_yellow_piece(self.screen, i, j, self.piece_col_base, self.piece_row_base, self.offset)
 
     def display_game_board(self):
