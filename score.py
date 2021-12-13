@@ -84,10 +84,10 @@ class ScoreScheme:
     def calculate_heuristic(self, board: Board):
         pass
         # (true(human),false(computer))
-        # 4 consecutive   540  500
-        # 3 that have available place from both sides (ya3ni mn el ne7yetein el le3ba el gaya tekamel 4 )  540,500
-        # 3 that can grow from one side or mn el nos  (ya3ni el le3ba el gaya mn ne7ya wa7da tekamel 4)  100,90
-        # 3 than we can add in the immediate next column bas msh el mara el gaya 3alatoul  aw 2 w wa7da w makan fadi fel nos 50, 40
+        # 4 consecutive   580  500
+        # 3 that have available place from both sides (ya3ni mn el ne7yetein el le3ba el gaya tekamel 4 )  580,500
+        # 3 that can grow from one side or mn el nos  (ya3ni el le3ba el gaya mn ne7ya wa7da tekamel 4)  120,90
+        # 3 than we can add in the immediate next column bas msh el mara el gaya 3alatoul  aw 2 w wa7da w makan fadi fel nos 60, 40
         # 2 +surrounding N empty places where N>=2 25+N , 20+N
         score = 0
         b = self.board_conv(board)
@@ -101,7 +101,7 @@ class ScoreScheme:
                     flag = 1
                     break
                 if b[i][start] == -1 and b[i][start + 1] == -1 and b[i][start + 2] == -1 and b[i][start + 3] == 1:
-                    score = score - 540
+                    score = score - 580
                     flag = 1
                     break
                 if b[i][start] == 1 and (
@@ -114,7 +114,7 @@ class ScoreScheme:
                         (b[i][start + 1] == -1 and b[i][start + 2] == 0 and self.is_avail(b, i, start + 2)) or (
                         b[i][start + 2] == -1 and b[i][start + 1] == 0 and self.is_avail(b, i, start + 1))) and b[i][
                     start + 3] == -1:
-                    score = score - 100
+                    score = score - 120
                     start += 2
                 if b[i][start] == 1 and (
                         (b[i][start + 1] == 1 and b[i][start + 2] == 0 and not self.is_avail(b, i, start + 2)) or (
@@ -126,7 +126,7 @@ class ScoreScheme:
                         (b[i][start + 1] == -1 and b[i][start + 2] == 0 and not self.is_avail(b, i, start + 2)) or (
                         b[i][start + 2] == -1 and b[i][start + 1] == 0 and not self.is_avail(b, i, start + 1))) and \
                         b[i][start + 3] == -1:
-                    score = score - 50
+                    score = score - 60
                     start += 2
                 else:
                     start = start + 1
@@ -155,16 +155,16 @@ class ScoreScheme:
                         (start != 0 and b[i][start - 1] == -1) or (start + 2 != 6 and b[i][start + 3] == -1)):
                     if start > 0 and self.is_avail(b, i, start - 1):
                         if start + 3 < 7 and self.is_avail(b, i, start + 3):
-                            score = score - 540
+                            score = score - 580
                             start = start + 4
                         else:
-                            score = score - 100
+                            score = score - 120
                             start = start + 3
                     elif start + 3 < 7 and self.is_avail(b, i, start + 3):
-                        score = score - 100
+                        score = score - 120
                         start = start + 4
                     elif (start > 0 and b[i][start - 1] == 0) or (start + 3 < 7 and b[start + 3] == 0):
-                        score = score - 50
+                        score = score - 60
                         start = start + 3
                 else:
                     start = start + 1
@@ -210,14 +210,14 @@ class ScoreScheme:
                     score += 500
                     continue
                 if b[start][i] == -1 and b[start - 1][i] == -1 and b[start - 2][i] == -1 and b[start - 3][i] == -1:
-                    score -= 540
+                    score -= 580
                     continue
             if start >= 2:
                 if b[start][i] == 1 and b[start - 1][i] == 1 and b[start - 2][i] == 1:
                     score += 90
                     continue
                 if b[start][i] == -1 and b[start - 1][i] == -1 and b[start - 2][i] == -1:
-                    score -= 100
+                    score -= 120
                     continue
             if start >= 1:
                 if b[start][i] == 1 and b[start - 1][i] == 1:
@@ -241,7 +241,7 @@ class ScoreScheme:
 
                     elif b[start][i - start] == -1 and b[start + 1][i - start - 1] == -1 and b[
                         start + 2][i - start - 2] == -1 and b[start + 3][i - start - 3] == -1:
-                        score = score - 540
+                        score = score - 580
                         flag = 1
                         break
                     elif b[start][i - start] == 1 and (
@@ -260,7 +260,7 @@ class ScoreScheme:
                                     b[start + 2][i - start - 2] == -1 and b[start + 1][
                                 i - start - 1] == 0 and self.is_avail(b, start + 1, i - start - 1))) and b[
                         start + 3][i - start - 3] == -1:
-                        score = score - 100
+                        score = score - 120
                         start += 2
                     elif b[start][i - start] == 1 and (
                             (b[start + 1][i - start - 1] == 1 and b[start + 2][
@@ -278,7 +278,7 @@ class ScoreScheme:
                                     b[start + 2][i - start - 2] == -1 and b[start + 1][
                                 i - start - 1] == 0 and not self.is_avail(b, start + 1, i - start - 1))) and \
                             b[start + 3][i - start - 3] == -1:
-                        score = score - 50
+                        score = score - 60
                         start += 2
                     else:
                         start += 1
@@ -311,18 +311,18 @@ class ScoreScheme:
                                 i - start + 1] == 0 and self.is_avail(b, start - 1, i - start + 1):
                                 if i - start - 3 >= 0 and start + 3 <= 5 and b[start + 3][
                                     i - start - 3] == 0 and self.is_avail(b, start + 3, i - start - 3):
-                                    score -= 540
+                                    score -= 580
                                     start += 4
                                 else:
-                                    score -= 100
+                                    score -= 120
                                     start += 3
                             elif i - start - 3 >= 0 and start + 3 <= 5 and b[start + 3][
                                 i - start - 3] == 0 and self.is_avail(b, start + 3, i - start - 3):
-                                score -= 100
+                                score -= 120
                                 start += 4
                             elif (start - 1 >= 0 and i - start + 1 <= 6 and b[start - 1][i - start + 1] == 0) or (
                                     i - start - 3 >= 0 and start + 3 <= 5 and b[start + 3][i - start - 3] == 0):
-                                score -= 50
+                                score -= 60
                                 start += 3
                     start = 0
                     wnds = 2
@@ -374,7 +374,7 @@ class ScoreScheme:
 
                     elif b[start][i + start] == -1 and b[start + 1][i + start + 1] == -1 and b[
                         start + 2][i + start + 2] == -1 and b[start + 3][i + start + 3] == -1:
-                        score = score - 540
+                        score = score - 580
                         flag = 1
                         break
                     elif b[start][i + start] == 1 and (
@@ -393,7 +393,7 @@ class ScoreScheme:
                                     b[start + 2][i + start + 2] == -1 and b[start + 1][
                                 i + start + 1] == 0 and self.is_avail(b, start + 1, i + start + 1))) and b[
                         start + 3][i + start + 3] == -1:
-                        score = score - 100
+                        score = score - 120
                         start += 2
                     elif b[start][i + start] == 1 and (
                             (b[start + 1][i + start + 1] == 1 and b[start + 2][
@@ -411,7 +411,7 @@ class ScoreScheme:
                                     b[start + 2][i + start + 2] == -1 and b[start + 1][
                                 i + start + 1] == 0 and not self.is_avail(b, start + 1, i + start + 1))) and \
                             b[start + 3][i + start + 3] == -1:
-                        score = score - 50
+                        score = score - 60
                         start += 2
                     else:
                         start += 1
@@ -446,18 +446,18 @@ class ScoreScheme:
                                 i + start - 1] == 0 and self.is_avail(b, start - 1, i + start - 1):
                                 if i + start + 3 <= 6 and start + 3 <= 5 and b[start + 3][
                                     i + start + 3] == 0 and self.is_avail(b, start + 3, i + start + 3):
-                                    score -= 540
+                                    score -= 580
                                     start += 4
                                 else:
-                                    score -= 100
+                                    score -= 120
                                     start += 3
                             elif i + start + 3 <= 6 and start + 3 <= 5 and b[start + 3][
                                 i + start + 3] == 0 and self.is_avail(b, start + 3, i + start + 3):
-                                score -= 100
+                                score -= 120
                                 start += 4
                             elif (start - 1 >= 0 and i + start - 1 >= 0 and b[start - 1][i + start - 1] == 0) or (
                                     i + start + 3 <= 6 and start + 3 <= 5 and b[start + 3][i + start + 3] == 0):
-                                score -= 50
+                                score -= 60
                                 start += 3
                             else:
                                 start += 1
@@ -506,6 +506,9 @@ class ScoreScheme:
                                        [3, 4, 5, 7, 5, 4, 3]]
                         for i in range(6):
                             for j in range(7):
-                                score += ones_matrix[i][j] * b[i][j]
+                                if b[i][j]==-1:
+                                    score+=2*ones_matrix[i][j] * b[i][j]
+                                else:
+                                    score += ones_matrix[i][j] * b[i][j]
 
         return score
