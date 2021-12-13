@@ -396,6 +396,8 @@ class ScoreScheme:
                                     i + start + 3 <= 6 and start + 3 <= 5 and b[start + 3][i + start + 3] == 0):
                                 score += 40
                                 start += 3
+                            else:
+                                start+=1
                         if b[start][i + start] == -1 and b[start + 1][i + start + 1] == -1 and b[start + 2][
                             i + start + 2] == -1:
                             if start - 1 >= 0 and i + start - 1 >= 0 and b[start - 1][
@@ -415,6 +417,8 @@ class ScoreScheme:
                                     i + start + 3 <= 6 and start + 3 <= 5 and b[start + 3][i + start + 3] == 0):
                                 score -= 50
                                 start += 3
+                            else:
+                                start+=1
                     start = 0
                     wnds = 2
                     while i + start + 1 <= 6:
