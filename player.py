@@ -10,7 +10,7 @@ class Player:
 
 
 class Human(Player):
-    def __init__(self, val=True):
+    def __init__(self, val=False):
         super().__init__(val)
 
     def update_board(self, board: Board, col=-1):
@@ -18,8 +18,8 @@ class Human(Player):
 
 
 class Computer(Player):
-    def __init__(self):
-        super().__init__(False)
+    def __init__(self, val=True):
+        super().__init__(val)
 
     def update_board(self, board: Board, col=-1):
         board.set_piece(col, self.player_type)

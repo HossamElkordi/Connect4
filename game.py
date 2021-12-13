@@ -27,7 +27,8 @@ class Game:
             self.scoring = ScoreScheme('alpha_beta', int(self.current_menu.choiceMenu.maxDepth))
             players = [Human(), Computer()]
         elif work == 3:
-            players = [Human(), Human(False)]
+            self.scoring = ScoreScheme(None, None)
+            players = [Human(), Human(True)]
         turn = 0
         game_board = Board(self.screen)
 
@@ -46,30 +47,37 @@ class Game:
                         if e.key == pygame.K_1:
                             players[turn].update_board(game_board, col=0)
                             turn = (turn + 1) % 2
+                            print(self.scoring.calculate_heuristic(game_board))
                             break
                         elif e.key == pygame.K_2:
                             players[turn].update_board(game_board, col=1)
                             turn = (turn + 1) % 2
+                            print(self.scoring.calculate_heuristic(game_board))
                             break
                         elif e.key == pygame.K_3:
                             players[turn].update_board(game_board, col=2)
                             turn = (turn + 1) % 2
+                            print(self.scoring.calculate_heuristic(game_board))
                             break
                         elif e.key == pygame.K_4:
                             players[turn].update_board(game_board, col=3)
                             turn = (turn + 1) % 2
+                            print(self.scoring.calculate_heuristic(game_board))
                             break
                         elif e.key == pygame.K_5:
                             players[turn].update_board(game_board, col=4)
                             turn = (turn + 1) % 2
+                            print(self.scoring.calculate_heuristic(game_board))
                             break
                         elif e.key == pygame.K_6:
                             players[turn].update_board(game_board, col=5)
                             turn = (turn + 1) % 2
+                            print(self.scoring.calculate_heuristic(game_board))
                             break
                         elif e.key == pygame.K_7:
                             players[turn].update_board(game_board, col=6)
                             turn = (turn + 1) % 2
+                            print(self.scoring.calculate_heuristic(game_board))
                             break
                         elif e.key == pygame.K_ESCAPE:
                             self.playing = False
