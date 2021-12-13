@@ -16,7 +16,7 @@ class ScoreScheme:
     def min_max(self, board: Board, depth, player, alpha=None, beta=None):
         if depth == 0:
             h = self.calculate_heuristic(board)
-            node = TreeNode(h, None)
+            node = TreeNode(h, None, -1)
             return node
         if player:
             root = self.max_val(board, depth, alpha, beta)
