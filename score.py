@@ -62,15 +62,16 @@ class ScoreScheme:
 
     def board_conv(self, board: Board):
         # -1 human  1 computer   0 vacant
-        b = [[0]*7]*6
+        b = np.zeros((6,7))
         for i in range(6):
             for j in range(7):
                 if i >= 5 - board.col_pos[j]:
-                    b[i][j] = 0
+                    b[i,j] = 0
                 elif board.board[5 - i,j]:
-                    b[i][j] = -1
+                    b[i,j] = 1
                 else:
-                    b[i][j] = 1
+                    b[i,j] = -1
+        b=list(b)
         return b
 
     def is_avail(self, board, i, j):
@@ -91,6 +92,7 @@ class ScoreScheme:
         # 2 +surrounding N empty places where N>=2 25+N , 20+N
         score = 0
         b = self.board_conv(board)
+        #print(b)
         for i in range(5 - int(np.amin(board.col_pos))):
             start = 0
             flag = 0
@@ -100,7 +102,7 @@ class ScoreScheme:
                     score = score + 500
                     flag = 1
                     break
-                if b[i][start] == -1 and b[i][start + 1] == -1 and b[i][start + 2] == -1 and b[i][start + 3] == 1:
+                if b[i][start] == -1 and b[i][start + 1] == -1 and b[i][start + 2] == -1 and b[i][start + 3] == -1:
                     score = score - 580
                     flag = 1
                     break
@@ -122,6 +124,7 @@ class ScoreScheme:
                     start + 3] == 1:
                     score = score + 40
                     start += 2
+                #print(i,start)
                 if b[i][start] == -1 and (
                         (b[i][start + 1] == -1 and b[i][start + 2] == 0 and not self.is_avail(b, i, start + 2)) or (
                         b[i][start + 2] == -1 and b[i][start + 1] == 0 and not self.is_avail(b, i, start + 1))) and \
@@ -148,9 +151,11 @@ class ScoreScheme:
                     elif start + 3 < 7 and self.is_avail(b, i, start + 3):
                         score = score + 90
                         start = start + 4
-                    elif (start > 0 and b[i][start - 1] == 0) or (start + 3 < 7 and b[start + 3] == 0):
+                    elif (start > 0 and b[i][start - 1] == 0) or (start + 3 < 7 and b[i][start + 3] == 0):
                         score = score + 40
                         start = start + 3
+                    else:
+                        start=start+1
                 elif b[i][start] == -1 and b[i][start + 1] == -1 and b[i][start + 2] == -1 and not (
                         (start != 0 and b[i][start - 1] == -1) or (start + 2 != 6 and b[i][start + 3] == -1)):
                     if start > 0 and self.is_avail(b, i, start - 1):
@@ -163,9 +168,11 @@ class ScoreScheme:
                     elif start + 3 < 7 and self.is_avail(b, i, start + 3):
                         score = score - 120
                         start = start + 4
-                    elif (start > 0 and b[i][start - 1] == 0) or (start + 3 < 7 and b[start + 3] == 0):
+                    elif (start > 0 and b[i][start - 1] == 0) or (start + 3 < 7 and b[i][start + 3] == 0):
                         score = score - 60
                         start = start + 3
+                    else:
+                        start+=1
                 else:
                     start = start + 1
 
@@ -180,21 +187,20 @@ class ScoreScheme:
                         count += 1
                         j += 1
                     j = 1
-                    while start + j < 7 and b[i][start + j] == 0:
+                    while start + j + 1 < 7 and b[i][start + 1 + j] == 0:
                         count += 1
                         j += 1
                     if count > 1:
                         score = score + 20 + count
                     start = start + 2
-                elif b[i][start] == -1 and b[i][start + 1] == -1 and (
-                        (start - 1 >= 0 and b[i][start - 1] == -1) or (start + 2 <= 6 and b[i][start + 2] == -1)):
+                elif b[i][start] == -1 and b[i][start + 1] == -1 and not ((start - 1 >= 0 and b[i][start - 1] == -1) or (start + 2 <= 6 and b[i][start + 2] == -1)):
                     count = 0
                     j = 1
                     while start - j >= 0 and b[i][start - j] == 0:
                         count += 1
                         j += 1
                     j = 1
-                    while start + j < 7 and b[i][start + j] == 0:
+                    while start + j + 1 < 7 and b[i][start + 1 +j] == 0:
                         count += 1
                         j += 1
                     if count > 1:
@@ -204,7 +210,7 @@ class ScoreScheme:
                     start += 1
 
         for i in range(7):
-            start =(int) (5 - board.col_pos[i] - 1)
+            start =(int) (5 - board.col_pos[i]-1)
             if start >= 3:
                 if b[start][i] == 1 and b[start - 1][i] == 1 and b[start - 2][i] == 1 and b[start - 3][i] == 1:
                     score += 500
@@ -221,10 +227,10 @@ class ScoreScheme:
                     continue
             if start >= 1:
                 if b[start][i] == 1 and b[start - 1][i] == 1:
-                    score += (20 + 6 - start)
+                    score += (20 + board.col_pos[i]+1)
                     continue
                 if b[start][i] == -1 and b[start - 1][i] == -1:
-                    score -= (25 + 6 - start)
+                    score -= (25 + board.col_pos[i]+1)
                     continue
 
         for i in range(7):
@@ -282,7 +288,7 @@ class ScoreScheme:
                         start += 2
                     else:
                         start += 1
-                if flag != 0:
+                if flag != 1:
                     start = 0
                     wnds = 3
                     while i - start - 2 >= 0 and start + 2 < 6:
@@ -305,6 +311,8 @@ class ScoreScheme:
                                     i - start - 3 >= 0 and start + 3 <= 5 and b[start + 3][i - start - 3] == 0):
                                 score += 40
                                 start += 3
+                            else:
+                                start+=1
                         if b[start][i - start] == -1 and b[start + 1][i - start - 1] == -1 and b[start + 2][
                             i - start - 2] == -1:
                             if start - 1 >= 0 and i - start + 1 <= 6 and b[start - 1][
@@ -324,10 +332,14 @@ class ScoreScheme:
                                     i - start - 3 >= 0 and start + 3 <= 5 and b[start + 3][i - start - 3] == 0):
                                 score -= 60
                                 start += 3
+                            else:
+                                start+=1
+                        else:
+                            start+=1
                     start = 0
                     wnds = 2
                     while i - start - 1 >= 0:
-                        if b[start][i - start] == 1 and b[start][i - start - 1] == 1 and not (
+                        if b[start][i - start] == 1 and b[start+1][i - start - 1] == 1 and not (
                                 (start > 0 and b[start - 1][i - start + 1] == 1) or (
                                 start + 2 <= 5 and b[start + 2][i - start - 2] == 1)):
                             count = 0
@@ -343,7 +355,7 @@ class ScoreScheme:
                             if count > 1:
                                 score = score + 20 + count
                             start = start + 2
-                        elif b[start][i - start] == -1 and b[start][i - start - 1] == -1 and not (
+                        elif b[start][i - start] == -1 and b[start+1][i - start - 1] == -1 and not (
                                 (start > 0 and b[start - 1][i - start + 1] == -1) or (
                                 start + 2 <= 5 and b[start + 2][i - start - 2] == -1)):
                             count = 0
@@ -362,7 +374,7 @@ class ScoreScheme:
                         else:
                             start += 1
 
-            if i <= 2:
+            if i <= 3:
                 start = 0
                 wnds = 4
                 while i + start + 3 <= 6 and start + 3 < 6:
@@ -415,7 +427,7 @@ class ScoreScheme:
                         start += 2
                     else:
                         start += 1
-                if flag != 0:
+                if flag != 1:
                     start = 0
                     wnds = 3
                     while i + start + 2 <= 6 and start + 2 < 6:
@@ -461,10 +473,12 @@ class ScoreScheme:
                                 start += 3
                             else:
                                 start += 1
+                        else:
+                            start+=1
                     start = 0
                     wnds = 2
                     while i + start + 1 <= 6:
-                        if b[start][i + start] == 1 and b[start][i + start + 1] == 1 and not (
+                        if b[start][i + start] == 1 and b[start+1][i + start + 1] == 1 and not (
                                 (start > 0 and i + start - 1 >= 0 and b[start - 1][i + start - 1] == 1) or (
                                 start + 2 <= 5 and i + start + 2 <= 6 and b[start + 2][i + start + 2] == 1)):
                             count = 0
@@ -480,7 +494,7 @@ class ScoreScheme:
                             if count > 1:
                                 score = score + 20 + count
                             start = start + 2
-                        elif b[start][i + start] == -1 and b[start][i + start + 1] == -1 and not (
+                        elif b[start][i + start] == -1 and b[start+1][i + start + 1] == -1 and not (
                                 (start > 0 and i + start - 1 >= 0 and b[start - 1][i + start - 1] == -1) or (
                                 start + 2 <= 5 and i + start + 2 <= 6 and b[start + 2][i + start + 2] == -1)):
                             count = 0
@@ -494,21 +508,21 @@ class ScoreScheme:
                                 count += 1
                                 j += 1
                             if count > 1:
-                                score = score + 20 + count
+                                score = score - 25 - count
                             start = start + 2
                         else:
                             start += 1
-                        ones_matrix = [[3, 4, 5, 7, 5, 4, 3],
-                                       [4, 6, 8, 10, 8, 6, 4],
-                                       [5, 8, 11, 13, 11, 8, 5],
-                                       [5, 8, 11, 13, 11, 8, 5],
-                                       [4, 6, 8, 10, 8, 6, 4],
-                                       [3, 4, 5, 7, 5, 4, 3]]
-                        for i in range(6):
-                            for j in range(7):
-                                if b[i][j]==-1:
-                                    score+=2*ones_matrix[i][j] * b[i][j]
-                                else:
-                                    score += ones_matrix[i][j] * b[i][j]
-
+        ones_matrix = [[3, 4, 5, 7, 5, 4, 3],
+                       [4, 6, 8, 10, 8, 6, 4],
+                       [5, 8, 11, 13, 11, 8, 5],
+                       [5, 8, 11, 13, 11, 8, 5],
+                       [4, 6, 8, 10, 8, 6, 4],
+                       [3, 4, 5, 7, 5, 4, 3]]
+        for i in range(6):
+            for j in range(7):
+                if b[i][j]==-1:
+                    score+=ones_matrix[i][j] * b[i][j]
+                else:
+                    score += ones_matrix[i][j] * b[i][j]
+        #print(score)
         return score
