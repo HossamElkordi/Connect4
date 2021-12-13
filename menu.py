@@ -41,7 +41,7 @@ class Menu:
                     return -2
                 elif e.key == pygame.K_RETURN:
                     if self.maxDepth is not None:
-                        if len(self.maxDepth) > 0 and self.maxDepth.isdigit():
+                        if len(self.maxDepth) > 0 and self.maxDepth.isdigit() and self.cur < 2:
                             return self.cur
                     else:
                         return self.cur

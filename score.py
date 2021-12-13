@@ -1,29 +1,71 @@
 import numpy as np
-
+from math import inf
 from board import Board
+from tree import TreeNode
 
 
 class ScoreScheme:
     def __init__(self, scheme, max_depth):
         self.scheme = scheme
         self.max_depth = max_depth
-        print(self.max_depth, type(self.max_depth))
 
     def score(self, board: Board):
-        return self.min_max(board) if self.scheme == 'min_max' else self.alpha_beta(board)
+        return self.min_max(board, self.max_depth, False) if self.scheme == 'min_max' \
+            else self.min_max(board, self.max_depth, False, -inf, inf)
 
-    def min_max(self, board: Board):
-        pass
+    def min_max(self, board: Board, depth, player, alpha=None, beta=None):
+        if depth == 0:
+            h = self.calculate_heuristic(board)
+            node = TreeNode(h, None)
+            return node
+        if player:
+            root = self.max_val(board, depth, alpha, beta)
+        else:
+            root = self.min_val(board, depth, alpha, beta)
+        return root
 
-    def alpha_beta(self, board: Board):
-        pass
+    def max_val(self, board: Board, depth, alpha=None, beta=None):
+        val = -inf
+        children = []
+        branch = -1
+        for i in range(7):
+            b = board.clone()
+            b.set_piece(i, True)
+            children.append(self.min_max(b, depth - 1, False, alpha, beta))
+            old = val
+            val = max(val, children[-1].value())
+            if val != old:
+                branch = i
+            if alpha is not None and beta is not None:
+                if val >= beta:
+                    return TreeNode(val, children, branch)
+                alpha = max(val, alpha)
+        return TreeNode(val, children, branch)
+
+    def min_val(self, board: Board, depth, alpha=None, beta=None):
+        val = inf
+        children = []
+        branch = -1
+        for i in range(7):
+            b = board.clone()
+            b.set_piece(i, False)
+            children.append(self.min_max(b, depth - 1, True, alpha, beta))
+            old = val
+            val = min(val, children[-1].value())
+            if val != old:
+                branch = i
+            if alpha is not None and beta is not None:
+                if val <= alpha:
+                    return TreeNode(val, children, branch)
+                beta = min(val, beta)
+        return TreeNode(val, children, branch)
 
     def board_conv(self, board: Board):
         # -1 human  1 computer   0 vacant
         b = np.zeros((6, 7))
         for i in range(6):
             for j in range(7):
-                if (i >= 5 - board.col_pos[j]):
+                if i >= 5 - board.col_pos[j]:
                     b[i][j] = 0
                 elif board.board[5 - i][j]:
                     b[i][j] = -1
@@ -49,7 +91,7 @@ class ScoreScheme:
         # 2 +surrounding N empty places where N>=2 25+N , 20+N
         score = 0
         b = self.board_conv(board)
-        for i in range(5 - np.amin(board.col_pos)):
+        for i in range(5 - int(np.amin(board.col_pos))):
             start = 0
             flag = 0
             wnds = 4
@@ -191,8 +233,8 @@ class ScoreScheme:
                 start = 0
                 wnds = 4
                 while i - start - 3 >= 0 and start + 3 < 6:
-                    if b[start][i - start] == 1 and b[start + 1][i - start - 1] == 1 and b[start + 2][
-                        i - start - 2] == 1 and b[start + 3][i - start - 3] == 1:
+                    if b[start][i - start] == 1 and b[start + 1][i - start - 1] == 1 and \
+                            b[start + 2][i - start - 2] == 1 and b[start + 3][i - start - 3] == 1:
                         score = score + 500
                         flag = 1
                         break
@@ -397,7 +439,7 @@ class ScoreScheme:
                                 score += 40
                                 start += 3
                             else:
-                                start+=1
+                                start += 1
                         if b[start][i + start] == -1 and b[start + 1][i + start + 1] == -1 and b[start + 2][
                             i + start + 2] == -1:
                             if start - 1 >= 0 and i + start - 1 >= 0 and b[start - 1][
@@ -418,7 +460,7 @@ class ScoreScheme:
                                 score -= 50
                                 start += 3
                             else:
-                                start+=1
+                                start += 1
                     start = 0
                     wnds = 2
                     while i + start + 1 <= 6:
@@ -456,14 +498,14 @@ class ScoreScheme:
                             start = start + 2
                         else:
                             start += 1
-                        ones_matrix=[[3, 4, 5, 7, 5, 4, 3],
-                                    [4, 6, 8, 10, 8, 6, 4],
-                                    [5, 8, 11, 13, 11, 8, 5],
-                                    [5, 8, 11, 13, 11, 8, 5],
-                                    [4, 6, 8, 10, 8, 6, 4],
-                                    [3, 4, 5, 7, 5, 4, 3]]
+                        ones_matrix = [[3, 4, 5, 7, 5, 4, 3],
+                                       [4, 6, 8, 10, 8, 6, 4],
+                                       [5, 8, 11, 13, 11, 8, 5],
+                                       [5, 8, 11, 13, 11, 8, 5],
+                                       [4, 6, 8, 10, 8, 6, 4],
+                                       [3, 4, 5, 7, 5, 4, 3]]
                         for i in range(6):
                             for j in range(7):
-                                score+=ones_matrix[i][j]*b[i][j]
+                                score += ones_matrix[i][j] * b[i][j]
 
         return score

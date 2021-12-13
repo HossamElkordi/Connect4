@@ -45,23 +45,36 @@ class Game:
                     if e.type == pygame.KEYDOWN:
                         if e.key == pygame.K_1:
                             players[turn].update_board(game_board, col=0)
+                            turn = (turn + 1) % 2
+                            break
                         elif e.key == pygame.K_2:
                             players[turn].update_board(game_board, col=1)
+                            turn = (turn + 1) % 2
+                            break
                         elif e.key == pygame.K_3:
                             players[turn].update_board(game_board, col=2)
+                            turn = (turn + 1) % 2
+                            break
                         elif e.key == pygame.K_4:
                             players[turn].update_board(game_board, col=3)
+                            turn = (turn + 1) % 2
+                            break
                         elif e.key == pygame.K_5:
                             players[turn].update_board(game_board, col=4)
+                            turn = (turn + 1) % 2
+                            break
                         elif e.key == pygame.K_6:
                             players[turn].update_board(game_board, col=5)
+                            turn = (turn + 1) % 2
+                            break
                         elif e.key == pygame.K_7:
                             players[turn].update_board(game_board, col=6)
+                            turn = (turn + 1) % 2
+                            break
                         elif e.key == pygame.K_ESCAPE:
                             self.playing = False
-                        turn = (turn + 1) % 2
-                else:
-                    players[turn].update_board(game_board, self.scoring.score(game_board))
+                elif isinstance(players[turn], Computer):
+                    players[turn].update_board(game_board, self.scoring.score(game_board).branch())
                     turn = (turn + 1) % 2
 
             game_board.update_board()

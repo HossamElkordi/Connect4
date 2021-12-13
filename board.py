@@ -1,5 +1,6 @@
 import numpy as np
 import pygame
+import copy
 
 
 def draw_red_piece(screen, i, j, piece_col_base, piece_row_base, offset):
@@ -11,7 +12,7 @@ def draw_yellow_piece(screen, i, j, piece_col_base, piece_row_base, offset):
 
 
 class Board:
-    def __init__(self, screen):
+    def __init__(self, screen=None):
         self.board = np.zeros((6, 7), dtype=bool)
         self.col_pos = np.ones(7) * 5
         self.piece_col_base, self.piece_row_base, self.offset = 36, 99, 70
@@ -35,3 +36,9 @@ class Board:
 
     def display_game_board(self):
         self.screen.blit(self.board_img, (0, 60))
+
+    def clone(self):
+        b = Board()
+        b.board = copy.deepcopy(self.board)
+        b.col_pos = copy.deepcopy(self.col_pos)
+        return b
