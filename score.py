@@ -1,3 +1,5 @@
+import numpy as np
+
 from board import Board
 
 
@@ -15,3 +17,449 @@ class ScoreScheme:
 
     def alpha_beta(self, board: Board):
         pass
+
+    def board_conv(self, board: Board):
+        # -1 human  1 computer   0 vacant
+        b = np.zeros((6, 7))
+        for i in range(6):
+            for j in range(7):
+                if (i >= 5 - board.col_pos[j]):
+                    b[i][j] = 0
+                elif board.board[5 - i][j]:
+                    b[i][j] = -1
+                else:
+                    b[i][j] = 1
+        return b
+
+    def is_avail(self, board, i, j):
+        if board[i][j] == 0:
+            if (i == 0):
+                return True
+            if board[i - 1][j] != 0:
+                return True
+        return False
+
+    def calculate_heuristic(self, board: Board):
+        pass
+        # (true(human),false(computer))
+        # 4 consecutive   540  500
+        # 3 that have available place from both sides (ya3ni mn el ne7yetein el le3ba el gaya tekamel 4 )  540,500
+        # 3 that can grow from one side or mn el nos  (ya3ni el le3ba el gaya mn ne7ya wa7da tekamel 4)  100,90
+        # 3 than we can add in the immediate next column bas msh el mara el gaya 3alatoul  aw 2 w wa7da w makan fadi fel nos 50, 40
+        # 2 +surrounding N empty places where N>=2 25+N , 20+N
+        score = 0
+        b = self.board_conv(board)
+        for i in range(5 - np.amin(board.col_pos)):
+            start = 0
+            flag = 0
+            wnds = 4
+            while start + 3 < 7:
+                if b[i][start] == 1 and b[i][start + 1] == 1 and b[i][start + 2] == 1 and b[i][start + 3] == 1:
+                    score = score + 500
+                    flag = 1
+                    break
+                if b[i][start] == -1 and b[i][start + 1] == -1 and b[i][start + 2] == -1 and b[i][start + 3] == 1:
+                    score = score - 540
+                    flag = 1
+                    break
+                if b[i][start] == 1 and (
+                        (b[i][start + 1] == 1 and b[i][start + 2] == 0 and self.is_avail(b, i, start + 2)) or (
+                        b[i][start + 2] == 1 and b[i][start + 1] == 0 and self.is_avail(b, i, start + 1))) and b[i][
+                    start + 3] == 1:
+                    score = score + 90
+                    start += 2
+                if b[i][start] == -1 and (
+                        (b[i][start + 1] == -1 and b[i][start + 2] == 0 and self.is_avail(b, i, start + 2)) or (
+                        b[i][start + 2] == -1 and b[i][start + 1] == 0 and self.is_avail(b, i, start + 1))) and b[i][
+                    start + 3] == -1:
+                    score = score - 100
+                    start += 2
+                if b[i][start] == 1 and (
+                        (b[i][start + 1] == 1 and b[i][start + 2] == 0 and not self.is_avail(b, i, start + 2)) or (
+                        b[i][start + 2] == 1 and b[i][start + 1] == 0 and not self.is_avail(b, i, start + 1))) and b[i][
+                    start + 3] == 1:
+                    score = score + 40
+                    start += 2
+                if b[i][start] == -1 and (
+                        (b[i][start + 1] == -1 and b[i][start + 2] == 0 and not self.is_avail(b, i, start + 2)) or (
+                        b[i][start + 2] == -1 and b[i][start + 1] == 0 and not self.is_avail(b, i, start + 1))) and \
+                        b[i][start + 3] == -1:
+                    score = score - 50
+                    start += 2
+                else:
+                    start = start + 1
+            if flag == 1:
+                continue
+
+            start = 0
+            wnds = 3
+            while start + 2 < 7:
+                if b[i][start] == 1 and b[i][start + 1] == 1 and b[i][start + 2] == 1 and not (
+                        (start != 0 and b[i][start - 1] == 1) or (start + 2 != 6 and b[i][start + 3] == 1)):
+                    if start > 0 and self.is_avail(b, i, start - 1):
+                        if start + 3 < 7 and self.is_avail(b, i, start + 3):
+                            score = score + 500
+                            start = start + 4
+                        else:
+                            score = score + 90
+                            start = start + 3
+                    elif start + 3 < 7 and self.is_avail(b, i, start + 3):
+                        score = score + 90
+                        start = start + 4
+                    elif (start > 0 and b[i][start - 1] == 0) or (start + 3 < 7 and b[start + 3] == 0):
+                        score = score + 40
+                        start = start + 3
+                elif b[i][start] == -1 and b[i][start + 1] == -1 and b[i][start + 2] == -1 and not (
+                        (start != 0 and b[i][start - 1] == -1) or (start + 2 != 6 and b[i][start + 3] == -1)):
+                    if start > 0 and self.is_avail(b, i, start - 1):
+                        if start + 3 < 7 and self.is_avail(b, i, start + 3):
+                            score = score - 540
+                            start = start + 4
+                        else:
+                            score = score - 100
+                            start = start + 3
+                    elif start + 3 < 7 and self.is_avail(b, i, start + 3):
+                        score = score - 100
+                        start = start + 4
+                    elif (start > 0 and b[i][start - 1] == 0) or (start + 3 < 7 and b[start + 3] == 0):
+                        score = score - 50
+                        start = start + 3
+                else:
+                    start = start + 1
+
+            start = 0
+            wnds = 2
+            while start + 1 < 7:
+                if b[i][start] == 1 and b[i][start + 1] == 1 and not (
+                        (start - 1 >= 0 and b[i][start - 1] == 1) or (start + 2 <= 6 and b[i][start + 2] == 1)):
+                    count = 0
+                    j = 1
+                    while start - j >= 0 and b[i][start - j] == 0:
+                        count += 1
+                        j += 1
+                    j = 1
+                    while start + j < 7 and b[i][start + j] == 0:
+                        count += 1
+                        j += 1
+                    if count > 1:
+                        score = score + 20 + count
+                    start = start + 2
+                elif b[i][start] == -1 and b[i][start + 1] == -1 and (
+                        (start - 1 >= 0 and b[i][start - 1] == -1) or (start + 2 <= 6 and b[i][start + 2] == -1)):
+                    count = 0
+                    j = 1
+                    while start - j >= 0 and b[i][start - j] == 0:
+                        count += 1
+                        j += 1
+                    j = 1
+                    while start + j < 7 and b[i][start + j] == 0:
+                        count += 1
+                        j += 1
+                    if count > 1:
+                        score = score - 25 - count
+                    start = start + 2
+                else:
+                    start += 1
+
+        for i in range(7):
+            start = 5 - board.col_pos[i] - 1
+            if start >= 3:
+                if b[start][i] == 1 and b[start - 1][i] == 1 and b[start - 2][i] == 1 and b[start - 3][i] == 1:
+                    score += 500
+                    continue
+                if b[start][i] == -1 and b[start - 1][i] == -1 and b[start - 2][i] == -1 and b[start - 3][i] == -1:
+                    score -= 540
+                    continue
+            if start >= 2:
+                if b[start][i] == 1 and b[start - 1][i] == 1 and b[start - 2][i] == 1:
+                    score += 90
+                    continue
+                if b[start][i] == -1 and b[start - 1][i] == -1 and b[start - 2][i] == -1:
+                    score -= 100
+                    continue
+            if start >= 1:
+                if b[start][i] == 1 and b[start - 1][i] == 1:
+                    score += (20 + 6 - start)
+                    continue
+                if b[start][i] == -1 and b[start - 1][i] == -1:
+                    score -= (25 + 6 - start)
+                    continue
+
+        for i in range(7):
+            flag = 0
+            if i >= 3:
+                start = 0
+                wnds = 4
+                while i - start - 3 >= 0 and start + 3 < 6:
+                    if b[start][i - start] == 1 and b[start + 1][i - start - 1] == 1 and b[start + 2][
+                        i - start - 2] == 1 and b[start + 3][i - start - 3] == 1:
+                        score = score + 500
+                        flag = 1
+                        break
+
+                    elif b[start][i - start] == -1 and b[start + 1][i - start - 1] == -1 and b[
+                        start + 2][i - start - 2] == -1 and b[start + 3][i - start - 3] == -1:
+                        score = score - 540
+                        flag = 1
+                        break
+                    elif b[start][i - start] == 1 and (
+                            (b[start + 1][i - start - 1] == 1 and b[start + 2][i - start - 2] == 0 and self.is_avail(b,
+                                                                                                                     start + 2,
+                                                                                                                     i - start - 2)) or (
+                                    b[start + 2][i - start - 2] == 1 and b[start + 1][
+                                i - start - 1] == 0 and self.is_avail(b, start + 1, i - start - 1))) and b[
+                        start + 3][i - start - 3] == 1:
+                        score = score + 90
+                        start += 2
+                    elif b[start][i - start] == -1 and (
+                            (b[start + 1][i - start - 1] == -1 and b[start + 2][i - start - 2] == 0 and self.is_avail(b,
+                                                                                                                      start + 2,
+                                                                                                                      i - start - 2)) or (
+                                    b[start + 2][i - start - 2] == -1 and b[start + 1][
+                                i - start - 1] == 0 and self.is_avail(b, start + 1, i - start - 1))) and b[
+                        start + 3][i - start - 3] == -1:
+                        score = score - 100
+                        start += 2
+                    elif b[start][i - start] == 1 and (
+                            (b[start + 1][i - start - 1] == 1 and b[start + 2][
+                                i - start - 2] == 0 and not self.is_avail(b, start + 2, i - start - 2)) or (
+                                    b[start + 2][i - start - 2] == 1 and b[start + 1][
+                                i - start - 1] == 0 and not self.is_avail(b, start + 1, i - start - 1))) and \
+                            b[start + 3][i - start - 3] == 1:
+                        score = score + 40
+                        start += 2
+
+
+                    elif b[start][i - start] == -1 and (
+                            (b[start + 1][i - start - 1] == -1 and b[
+                                start + 2][i - start - 2] == 0 and not self.is_avail(b, start + 2, i - start - 2)) or (
+                                    b[start + 2][i - start - 2] == -1 and b[start + 1][
+                                i - start - 1] == 0 and not self.is_avail(b, start + 1, i - start - 1))) and \
+                            b[start + 3][i - start - 3] == -1:
+                        score = score - 50
+                        start += 2
+                    else:
+                        start += 1
+                if flag != 0:
+                    start = 0
+                    wnds = 3
+                    while i - start - 2 >= 0 and start + 2 < 6:
+                        if b[start][i - start] == 1 and b[start + 1][i - start - 1] == 1 and b[start + 2][
+                            i - start - 2] == 1:
+                            if start - 1 >= 0 and i - start + 1 <= 6 and b[start - 1][
+                                i - start + 1] == 0 and self.is_avail(b, start - 1, i - start + 1):
+                                if i - start - 3 >= 0 and start + 3 <= 5 and b[start + 3][
+                                    i - start - 3] == 0 and self.is_avail(b, start + 3, i - start - 3):
+                                    score += 500
+                                    start += 4
+                                else:
+                                    score += 90
+                                    start += 3
+                            elif i - start - 3 >= 0 and start + 3 <= 5 and b[start + 3][
+                                i - start - 3] == 0 and self.is_avail(b, start + 3, i - start - 3):
+                                score += 90
+                                start += 4
+                            elif (start - 1 >= 0 and i - start + 1 <= 6 and b[start - 1][i - start + 1] == 0) or (
+                                    i - start - 3 >= 0 and start + 3 <= 5 and b[start + 3][i - start - 3] == 0):
+                                score += 40
+                                start += 3
+                        if b[start][i - start] == -1 and b[start + 1][i - start - 1] == -1 and b[start + 2][
+                            i - start - 2] == -1:
+                            if start - 1 >= 0 and i - start + 1 <= 6 and b[start - 1][
+                                i - start + 1] == 0 and self.is_avail(b, start - 1, i - start + 1):
+                                if i - start - 3 >= 0 and start + 3 <= 5 and b[start + 3][
+                                    i - start - 3] == 0 and self.is_avail(b, start + 3, i - start - 3):
+                                    score -= 540
+                                    start += 4
+                                else:
+                                    score -= 100
+                                    start += 3
+                            elif i - start - 3 >= 0 and start + 3 <= 5 and b[start + 3][
+                                i - start - 3] == 0 and self.is_avail(b, start + 3, i - start - 3):
+                                score -= 100
+                                start += 4
+                            elif (start - 1 >= 0 and i - start + 1 <= 6 and b[start - 1][i - start + 1] == 0) or (
+                                    i - start - 3 >= 0 and start + 3 <= 5 and b[start + 3][i - start - 3] == 0):
+                                score -= 50
+                                start += 3
+                    start = 0
+                    wnds = 2
+                    while i - start - 1 >= 0:
+                        if b[start][i - start] == 1 and b[start][i - start - 1] == 1 and not (
+                                (start > 0 and b[start - 1][i - start + 1] == 1) or (
+                                start + 2 <= 5 and b[start + 2][i - start - 2] == 1)):
+                            count = 0
+                            j = 1
+                            while i - start + j <= 6 and start - j >= 0 and b[start - j][i - start + j] == 0:
+                                count += 1
+                                j += 1
+                            j = 1
+                            while start + 1 + j < 6 and i - start - 1 - j >= 0 and b[start + 1 + j][
+                                i - start - 1 - j] == 0:
+                                count += 1
+                                j += 1
+                            if count > 1:
+                                score = score + 20 + count
+                            start = start + 2
+                        elif b[start][i - start] == -1 and b[start][i - start - 1] == -1 and not (
+                                (start > 0 and b[start - 1][i - start + 1] == -1) or (
+                                start + 2 <= 5 and b[start + 2][i - start - 2] == -1)):
+                            count = 0
+                            j = 1
+                            while i - start + j <= 6 and start - j >= 0 and b[start - j][i - start + j] == 0:
+                                count += 1
+                                j += 1
+                            j = 1
+                            while start + 1 + j < 6 and i - start - 1 - j >= 0 and b[start + 1 + j][
+                                i - start - 1 - j] == 0:
+                                count += 1
+                                j += 1
+                            if count > 1:
+                                score = score - 25 - count
+                            start = start + 2
+                        else:
+                            start += 1
+
+            if i <= 2:
+                start = 0
+                wnds = 4
+                while i + start + 3 <= 6 and start + 3 < 6:
+                    if b[start][i + start] == 1 and b[start + 1][i + start + 1] == 1 and b[start + 2][
+                        i + start + 2] == 1 and b[start + 3][i + start + 3] == 1:
+                        score = score + 500
+                        flag = 1
+                        break
+
+                    elif b[start][i + start] == -1 and b[start + 1][i + start + 1] == -1 and b[
+                        start + 2][i + start + 2] == -1 and b[start + 3][i + start + 3] == -1:
+                        score = score - 540
+                        flag = 1
+                        break
+                    elif b[start][i + start] == 1 and (
+                            (b[start + 1][i + start + 1] == 1 and b[start + 2][i + start + 2] == 0 and self.is_avail(b,
+                                                                                                                     start + 2,
+                                                                                                                     i + start + 2)) or (
+                                    b[start + 2][i + start + 2] == 1 and b[start + 1][
+                                i + start + 1] == 0 and self.is_avail(b, start + 1, i + start + 1))) and b[
+                        start + 3][i + start + 3] == 1:
+                        score = score + 90
+                        start += 2
+                    elif b[start][i - start] == -1 and (
+                            (b[start + 1][i + start + 1] == -1 and b[start + 2][i + start + 2] == 0 and self.is_avail(b,
+                                                                                                                      start + 2,
+                                                                                                                      i + start + 2)) or (
+                                    b[start + 2][i + start + 2] == -1 and b[start + 1][
+                                i + start + 1] == 0 and self.is_avail(b, start + 1, i + start + 1))) and b[
+                        start + 3][i + start + 3] == -1:
+                        score = score - 100
+                        start += 2
+                    elif b[start][i + start] == 1 and (
+                            (b[start + 1][i + start + 1] == 1 and b[start + 2][
+                                i + start + 2] == 0 and not self.is_avail(b, start + 2, i + start + 2)) or (
+                                    b[start + 2][i + start + 2] == 1 and b[start + 1][
+                                i + start + 1] == 0 and not self.is_avail(b, start + 1, i + start + 1))) and \
+                            b[start + 3][i + start + 3] == 1:
+                        score = score + 40
+                        start += 2
+
+
+                    elif b[start][i - start] == -1 and (
+                            (b[start + 1][i + start + 1] == -1 and b[
+                                start + 2][i + start + 2] == 0 and not self.is_avail(b, start + 2, i + start + 2)) or (
+                                    b[start + 2][i + start + 2] == -1 and b[start + 1][
+                                i + start + 1] == 0 and not self.is_avail(b, start + 1, i + start + 1))) and \
+                            b[start + 3][i + start + 3] == -1:
+                        score = score - 50
+                        start += 2
+                    else:
+                        start += 1
+                if flag != 0:
+                    start = 0
+                    wnds = 3
+                    while i + start + 2 <= 6 and start + 2 < 6:
+                        if b[start][i + start] == 1 and b[start + 1][i + start + 1] == 1 and b[start + 2][
+                            i + start + 2] == 1:
+                            if start - 1 >= 0 and i + start - 1 >= 0 and b[start - 1][
+                                i + start - 1] == 0 and self.is_avail(b, start - 1, i + start - 1):
+                                if i + start + 3 <= 6 and start + 3 <= 5 and b[start + 3][
+                                    i + start + 3] == 0 and self.is_avail(b, start + 3, i + start + 3):
+                                    score += 500
+                                    start += 4
+                                else:
+                                    score += 90
+                                    start += 3
+                            elif i + start + 3 >= 0 and start + 3 <= 5 and b[start + 3][
+                                i + start + 3] == 0 and self.is_avail(b, start + 3, i + start + 3):
+                                score += 90
+                                start += 4
+                            elif (start - 1 >= 0 and i + start - 1 >= 0 and b[start - 1][i + start - 1] == 0) or (
+                                    i + start + 3 <= 6 and start + 3 <= 5 and b[start + 3][i + start + 3] == 0):
+                                score += 40
+                                start += 3
+                        if b[start][i + start] == -1 and b[start + 1][i + start + 1] == -1 and b[start + 2][
+                            i + start + 2] == -1:
+                            if start - 1 >= 0 and i + start - 1 >= 0 and b[start - 1][
+                                i + start - 1] == 0 and self.is_avail(b, start - 1, i + start - 1):
+                                if i + start + 3 <= 6 and start + 3 <= 5 and b[start + 3][
+                                    i + start + 3] == 0 and self.is_avail(b, start + 3, i + start + 3):
+                                    score -= 540
+                                    start += 4
+                                else:
+                                    score -= 100
+                                    start += 3
+                            elif i + start + 3 <= 6 and start + 3 <= 5 and b[start + 3][
+                                i + start + 3] == 0 and self.is_avail(b, start + 3, i + start + 3):
+                                score -= 100
+                                start += 4
+                            elif (start - 1 >= 0 and i + start - 1 >= 0 and b[start - 1][i + start - 1] == 0) or (
+                                    i + start + 3 <= 6 and start + 3 <= 5 and b[start + 3][i + start + 3] == 0):
+                                score -= 50
+                                start += 3
+                    start = 0
+                    wnds = 2
+                    while i + start + 1 <= 6:
+                        if b[start][i + start] == 1 and b[start][i + start + 1] == 1 and not (
+                                (start > 0 and i + start - 1 >= 0 and b[start - 1][i + start - 1] == 1) or (
+                                start + 2 <= 5 and i + start + 2 <= 6 and b[start + 2][i + start + 2] == 1)):
+                            count = 0
+                            j = 1
+                            while i + start - j >= 0 and start - j >= 0 and b[start - j][i + start - j] == 0:
+                                count += 1
+                                j += 1
+                            j = 1
+                            while start + 1 + j < 6 and i + start + 1 + j <= 6 and b[start + 1 + j][
+                                i + start + 1 + j] == 0:
+                                count += 1
+                                j += 1
+                            if count > 1:
+                                score = score + 20 + count
+                            start = start + 2
+                        elif b[start][i + start] == -1 and b[start][i + start + 1] == -1 and not (
+                                (start > 0 and i + start - 1 >= 0 and b[start - 1][i + start - 1] == -1) or (
+                                start + 2 <= 5 and i + start + 2 <= 6 and b[start + 2][i + start + 2] == -1)):
+                            count = 0
+                            j = 1
+                            while i + start - j >= 0 and start - j >= 0 and b[start - j][i + start - j] == 0:
+                                count += 1
+                                j += 1
+                            j = 1
+                            while start + 1 + j < 6 and i + start + 1 + j <= 6 and b[start + 1 + j][
+                                i + start + 1 + j] == 0:
+                                count += 1
+                                j += 1
+                            if count > 1:
+                                score = score + 20 + count
+                            start = start + 2
+                        else:
+                            start += 1
+                        ones_matrix=[[3, 4, 5, 7, 5, 4, 3],
+                                    [4, 6, 8, 10, 8, 6, 4],
+                                    [5, 8, 11, 13, 11, 8, 5],
+                                    [5, 8, 11, 13, 11, 8, 5],
+                                    [4, 6, 8, 10, 8, 6, 4],
+                                    [3, 4, 5, 7, 5, 4, 3]]
+                        for i in range(6):
+                            for j in range(7):
+                                score+=ones_matrix[i][j]*b[i][j]
+
+        return score
