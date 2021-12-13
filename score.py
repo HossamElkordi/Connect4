@@ -204,7 +204,7 @@ class ScoreScheme:
                     start += 1
 
         for i in range(7):
-            start = 5 - board.col_pos[i] - 1
+            start =(int) (5 - board.col_pos[i] - 1)
             if start >= 3:
                 if b[start][i] == 1 and b[start - 1][i] == 1 and b[start - 2][i] == 1 and b[start - 3][i] == 1:
                     score += 500
