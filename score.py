@@ -31,7 +31,7 @@ class ScoreScheme:
         for i in range(7):
             b = board.clone()
             b.set_piece(i, True)
-            children.append(self.min_max(b, depth - 1, False, alpha, beta))
+            children.append(self.min_max(b, depth - 1, True, alpha, beta))
             old = val
             val = max(val, children[-1].value())
             if val != old:
@@ -49,7 +49,7 @@ class ScoreScheme:
         for i in range(7):
             b = board.clone()
             b.set_piece(i, False)
-            children.append(self.min_max(b, depth - 1, True, alpha, beta))
+            children.append(self.min_max(b, depth - 1, False, alpha, beta))
             old = val
             val = min(val, children[-1].value())
             if val != old:
