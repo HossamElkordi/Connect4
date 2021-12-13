@@ -62,12 +62,12 @@ class ScoreScheme:
 
     def board_conv(self, board: Board):
         # -1 human  1 computer   0 vacant
-        b = np.zeros((6, 7))
+        b = [[0]*7]*6
         for i in range(6):
             for j in range(7):
                 if i >= 5 - board.col_pos[j]:
                     b[i][j] = 0
-                elif board.board[5 - i][j]:
+                elif board.board[5 - i,j]:
                     b[i][j] = -1
                 else:
                     b[i][j] = 1
