@@ -238,28 +238,26 @@ class ScoreScheme:
             if i >= 3:
                 start = 0
                 wnds = 4
-                while i - start - 3 >= 0 and start + 3 < 6:
-                    if b[start][i - start] == 1 and b[start + 1][i - start - 1] == 1 and \
+                while i - start - 3 >= 0 and start + 3 < 6 and i-start>=0 :
+                    if i - start - 3>=0 and start + 3<6 and  b[start][i - start] == 1 and b[start + 1][i - start - 1] == 1 and \
                             b[start + 2][i - start - 2] == 1 and b[start + 3][i - start - 3] == 1:
                         score = score + 500
                         flag = 1
                         break
 
-                    elif b[start][i - start] == -1 and b[start + 1][i - start - 1] == -1 and b[
+                    elif i - start - 3>=0 and start + 3<6 and b[start][i - start] == -1 and b[start + 1][i - start - 1] == -1 and b[
                         start + 2][i - start - 2] == -1 and b[start + 3][i - start - 3] == -1:
                         score = score - 580
                         flag = 1
                         break
-                    elif b[start][i - start] == 1 and (
-                            (b[start + 1][i - start - 1] == 1 and b[start + 2][i - start - 2] == 0 and self.is_avail(b,
-                                                                                                                     start + 2,
-                                                                                                                     i - start - 2)) or (
+                    elif i - start - 3>=0 and start + 3<6 and b[start][i - start] == 1 and (
+                            (b[start + 1][i - start - 1] == 1 and b[start + 2][i - start - 2] == 0 and self.is_avail(b,start + 2,i - start - 2)) or (
                                     b[start + 2][i - start - 2] == 1 and b[start + 1][
                                 i - start - 1] == 0 and self.is_avail(b, start + 1, i - start - 1))) and b[
                         start + 3][i - start - 3] == 1:
                         score = score + 90
                         start += 2
-                    elif b[start][i - start] == -1 and (
+                    elif i - start - 3>=0 and start + 3<6 and b[start][i - start] == -1 and (
                             (b[start + 1][i - start - 1] == -1 and b[start + 2][i - start - 2] == 0 and self.is_avail(b,
                                                                                                                       start + 2,
                                                                                                                       i - start - 2)) or (
@@ -268,7 +266,7 @@ class ScoreScheme:
                         start + 3][i - start - 3] == -1:
                         score = score - 120
                         start += 2
-                    elif b[start][i - start] == 1 and (
+                    elif i - start - 3>=0 and start + 3<6 and b[start][i - start] == 1 and (
                             (b[start + 1][i - start - 1] == 1 and b[start + 2][
                                 i - start - 2] == 0 and not self.is_avail(b, start + 2, i - start - 2)) or (
                                     b[start + 2][i - start - 2] == 1 and b[start + 1][
@@ -278,7 +276,7 @@ class ScoreScheme:
                         start += 2
 
 
-                    elif b[start][i - start] == -1 and (
+                    elif i - start - 3>=0 and start + 3<6 and b[start][i - start] == -1 and (
                             (b[start + 1][i - start - 1] == -1 and b[
                                 start + 2][i - start - 2] == 0 and not self.is_avail(b, start + 2, i - start - 2)) or (
                                     b[start + 2][i - start - 2] == -1 and b[start + 1][
@@ -292,7 +290,7 @@ class ScoreScheme:
                     start = 0
                     wnds = 3
                     while i - start - 2 >= 0 and start + 2 < 6:
-                        if b[start][i - start] == 1 and b[start + 1][i - start - 1] == 1 and b[start + 2][
+                        if i - start - 2>=0 and start + 2<6 and b[start][i - start] == 1 and b[start + 1][i - start - 1] == 1 and b[start + 2][
                             i - start - 2] == 1:
                             if start - 1 >= 0 and i - start + 1 <= 6 and b[start - 1][
                                 i - start + 1] == 0 and self.is_avail(b, start - 1, i - start + 1):
@@ -312,8 +310,8 @@ class ScoreScheme:
                                 score += 40
                                 start += 3
                             else:
-                                start+=1
-                        if b[start][i - start] == -1 and b[start + 1][i - start - 1] == -1 and b[start + 2][
+                                 start+=1
+                        elif i - start - 2>=0 and start + 2<6 and b[start][i - start] == -1 and b[start + 1][i - start - 1] == -1 and b[start + 2][
                             i - start - 2] == -1:
                             if start - 1 >= 0 and i - start + 1 <= 6 and b[start - 1][
                                 i - start + 1] == 0 and self.is_avail(b, start - 1, i - start + 1):
@@ -339,7 +337,7 @@ class ScoreScheme:
                     start = 0
                     wnds = 2
                     while i - start - 1 >= 0 and start+1<6:
-                        if b[start][i - start] == 1 and b[start+1][i - start - 1] == 1 and not (
+                        if i - start - 1<=0 and start+1<6 and b[start][i - start] == 1 and b[start+1][i - start - 1] == 1 and not (
                                 (start > 0 and b[start - 1][i - start + 1] == 1) or (
                                 start + 2 <= 5 and b[start + 2][i - start - 2] == 1)):
                             count = 0
@@ -355,7 +353,7 @@ class ScoreScheme:
                             if count > 1:
                                 score = score + 20 + count
                             start = start + 2
-                        elif b[start][i - start] == -1 and b[start+1][i - start - 1] == -1 and not (
+                        elif i - start - 1<=0 and start+1<6 and  b[start][i - start] == -1 and b[start+1][i - start - 1] == -1 and not (
                                 (start > 0 and b[start - 1][i - start + 1] == -1) or (
                                 start + 2 <= 5 and b[start + 2][i - start - 2] == -1)):
                             count = 0
@@ -378,18 +376,18 @@ class ScoreScheme:
                 start = 0
                 wnds = 4
                 while i + start + 3 <= 6 and start + 3 < 6:
-                    if b[start][i + start] == 1 and b[start + 1][i + start + 1] == 1 and b[start + 2][
+                    if i + start + 3<7 and start + 3<6 and b[start][i + start] == 1 and b[start + 1][i + start + 1] == 1 and b[start + 2][
                         i + start + 2] == 1 and b[start + 3][i + start + 3] == 1:
                         score = score + 500
                         flag = 1
                         break
 
-                    elif b[start][i + start] == -1 and b[start + 1][i + start + 1] == -1 and b[
+                    elif i + start + 3<7 and start + 3<6 and b[start][i + start] == -1 and b[start + 1][i + start + 1] == -1 and b[
                         start + 2][i + start + 2] == -1 and b[start + 3][i + start + 3] == -1:
                         score = score - 580
                         flag = 1
                         break
-                    elif b[start][i + start] == 1 and (
+                    elif i + start + 3<7 and start + 3<6 and b[start][i + start] == 1 and (
                             (b[start + 1][i + start + 1] == 1 and b[start + 2][i + start + 2] == 0 and self.is_avail(b,
                                                                                                                      start + 2,
                                                                                                                      i + start + 2)) or (
@@ -398,7 +396,7 @@ class ScoreScheme:
                         start + 3][i + start + 3] == 1:
                         score = score + 90
                         start += 2
-                    elif b[start][i - start] == -1 and (
+                    elif i + start + 3<7 and start + 3<6 and b[start][i - start] == -1 and (
                             (b[start + 1][i + start + 1] == -1 and b[start + 2][i + start + 2] == 0 and self.is_avail(b,
                                                                                                                       start + 2,
                                                                                                                       i + start + 2)) or (
@@ -407,7 +405,7 @@ class ScoreScheme:
                         start + 3][i + start + 3] == -1:
                         score = score - 120
                         start += 2
-                    elif b[start][i + start] == 1 and (
+                    elif i + start + 3<7 and start + 3<6 and b[start][i + start] == 1 and (
                             (b[start + 1][i + start + 1] == 1 and b[start + 2][
                                 i + start + 2] == 0 and not self.is_avail(b, start + 2, i + start + 2)) or (
                                     b[start + 2][i + start + 2] == 1 and b[start + 1][
@@ -417,7 +415,7 @@ class ScoreScheme:
                         start += 2
 
 
-                    elif b[start][i - start] == -1 and (
+                    elif i + start + 3<7 and start + 3<6 and b[start][i - start] == -1 and (
                             (b[start + 1][i + start + 1] == -1 and b[
                                 start + 2][i + start + 2] == 0 and not self.is_avail(b, start + 2, i + start + 2)) or (
                                     b[start + 2][i + start + 2] == -1 and b[start + 1][
@@ -431,11 +429,11 @@ class ScoreScheme:
                     start = 0
                     wnds = 3
                     while i + start + 2 <= 6 and start + 2 < 6:
-                        if b[start][i + start] == 1 and b[start + 1][i + start + 1] == 1 and b[start + 2][
+                        if i + start + 2<7 and start + 2<6 and b[start][i + start] == 1 and b[start + 1][i + start + 1] == 1 and b[start + 2][
                             i + start + 2] == 1:
                             if start - 1 >= 0 and i + start - 1 >= 0 and b[start - 1][
                                 i + start - 1] == 0 and self.is_avail(b, start - 1, i + start - 1):
-                                if i + start + 3 <= 6 and start + 3 <= 5 and b[start + 3][
+                                if i + start + 3 <7 and start + 3 <6 and b[start + 3][
                                     i + start + 3] == 0 and self.is_avail(b, start + 3, i + start + 3):
                                     score += 500
                                     start += 4
@@ -452,7 +450,7 @@ class ScoreScheme:
                                 start += 3
                             # else:
                             #     start += 1
-                        if b[start][i + start] == -1 and b[start + 1][i + start + 1] == -1 and b[start + 2][
+                        if i + start + 2<7 and start + 2<6 and  b[start][i + start] == -1 and b[start + 1][i + start + 1] == -1 and b[start + 2][
                             i + start + 2] == -1:
                             if start - 1 >= 0 and i + start - 1 >= 0 and b[start - 1][
                                 i + start - 1] == 0 and self.is_avail(b, start - 1, i + start - 1):
@@ -478,7 +476,7 @@ class ScoreScheme:
                     start = 0
                     wnds = 2
                     while i + start + 1 <= 6:
-                        if b[start][i + start] == 1 and b[start+1][i + start + 1] == 1 and not (
+                        if i + start + 1<7 and start+1<6 and b[start][i + start] == 1 and b[start+1][i + start + 1] == 1 and not (
                                 (start > 0 and i + start - 1 >= 0 and b[start - 1][i + start - 1] == 1) or (
                                 start + 2 <= 5 and i + start + 2 <= 6 and b[start + 2][i + start + 2] == 1)):
                             count = 0
