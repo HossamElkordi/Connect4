@@ -13,7 +13,7 @@ class ScoreScheme:
         return self.min_max(board, self.max_depth, True, -1) if self.scheme == 'min_max' \
             else self.min_max(board, self.max_depth, True, -1, -inf, inf)
 
-    def min_max(self, board: Board, depth, player, col, alpha=None, beta=None):
+    def min_max(self, board: Board, depth, player, alpha=None, beta=None):
         if depth == 0:
             h = self.calculate_heuristic(board)
             node = TreeNode(h, None, -1, col)
@@ -24,7 +24,7 @@ class ScoreScheme:
             root = self.min_val(board, depth, col, alpha, beta)
         return root
 
-    def max_val(self, board: Board, depth, col, alpha=None, beta=None):
+    def max_val(self, board: Board, depth, alpha=None, beta=None):
         val = -inf
         children = []
         branch = -1
@@ -44,7 +44,7 @@ class ScoreScheme:
                 alpha = max(val, alpha)
         return TreeNode(val, children, branch, col)
 
-    def min_val(self, board: Board, depth, col, alpha=None, beta=None):
+    def min_val(self, board: Board, depth, alpha=None, beta=None):
         val = inf
         children = []
         branch = -1
@@ -528,3 +528,58 @@ class ScoreScheme:
                     score += ones_matrix[i][j] * b[i][j]
         #print(score)
         return score
+    def score_calc(self,board: Board):
+        pos,neg=0,0
+        b = self.board_conv(board)
+        for i in range(6):
+            start = 0
+            while start + 3 < 7 :
+                if i<6 and start+3<7 and b[i][start] == 1 and b[i][start + 1] == 1 and b[i][start + 2] == 1 and b[i][start + 3] == 1:
+                    pos+=1
+                    break
+                elif i<6 and start+3<7 and b[i][start] == -1 and b[i][start + 1] == -1 and b[i][start + 2] == -1 and b[i][start + 3] == -1:
+                    neg+=1
+                    break
+                else:
+                    start+=1
+        for i in range(7):
+            start = (int)(5 - board.col_pos[i] - 1)
+            while start-3>=0:
+                if b[start][i] == 1 and b[start - 1][i] == 1 and b[start - 2][i] == 1 and b[start - 3][i] == 1:
+                    pos += 1
+                    break
+                elif b[start][i] == -1 and b[start - 1][i] == -1 and b[start - 2][i] == -1 and b[start - 3][i] == -1:
+                    neg+=1
+                    break
+                else :
+                    start-=1
+        for i in range(7):
+            if i >= 3:
+                start = 0
+                while i - start - 3 >= 0 and start + 3 < 6 and i-start>=0 :
+                    if i - start - 3>=0 and start + 3<6 and  b[start][i - start] == 1 and b[start + 1][i - start - 1] == 1 and \
+                            b[start + 2][i - start - 2] == 1 and b[start + 3][i - start - 3] == 1:
+                        pos+=1
+                        break
+                    elif i - start - 3>=0 and start + 3<6 and b[start][i - start] == -1 and b[start + 1][i - start - 1] == -1 and b[
+                        start + 2][i - start - 2] == -1 and b[start + 3][i - start - 3] == -1:
+                        neg+=1
+                        break
+                    else:
+                        start+=1
+            if i <= 3:
+                start = 0
+                while i + start + 3 <= 6 and start + 3 < 6:
+                    if i + start + 3 < 7 and start + 3 < 6 and b[start][i + start] == 1 and b[start + 1][i + start + 1] == 1 and b[start + 2][
+                        i + start + 2] == 1 and b[start + 3][i + start + 3] == 1:
+                        pos+=1
+                        break
+
+                    elif i + start + 3 < 7 and start + 3 < 6 and b[start][i + start] == -1 and b[start + 1][
+                        i + start + 1] == -1 and b[
+                        start + 2][i + start + 2] == -1 and b[start + 3][i + start + 3] == -1:
+                        neg+=1
+                        break
+                    else:
+                        start+=1
+        return pos,neg
