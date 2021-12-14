@@ -20,17 +20,16 @@ class TreeNode:
 
 
 def plot_tree(r, depth):
-    plt.figure(3, figsize=((7**depth) * 1.5, 10 * (depth + 1)))
+    plt.figure(3, figsize=(40 * (depth + 1), 40 * (depth + 1)), dpi=40)
     g = nx.DiGraph()
     g.add_node(0, value=r.value())
     node_labels = {0: r.value()}
     traverse((0, r), g, node_labels)
-    pos = graphviz_layout(g, prog='dot')
+    pos = graphviz_layout(g, prog='twopi')
     nx.draw(g, pos, with_labels=False, arrows=True, node_size=6000, width=4)
     nx.draw_networkx_labels(g, pos, node_labels, font_size=20, font_color='yellow', font_weight='bold')
     nx.draw_networkx_edge_labels(g, pos, font_size=20, font_weight='bold')
-    # plt.show()
-    plt.savefig("tree.png", format="PNG")
+    plt.savefig("tree", format="JPEG")
 
 
 def traverse(child, g, node_labels):
