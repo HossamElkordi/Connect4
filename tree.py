@@ -31,6 +31,7 @@ def plot_tree(r, depth):
     nx.draw_networkx_labels(g, pos, node_labels, font_size=20, font_color='yellow', font_weight='bold')
     nx.draw_networkx_edge_labels(g, pos, font_size=20, font_weight='bold')
     plt.savefig("tree.jpg", format="JPEG")
+    print("Tree Saved")
     plt.close()
 
 
