@@ -93,6 +93,8 @@ class Game:
 
             game_board.update_board()
             if work < 3:
+                r, y = self.scoring.score_calc(game_board)
+                self.draw_text('Red: ' + str(r) + '   Yellow: ' + str(y), 20, 200, 10)
                 self.draw_text('Press SPACE to visualize the MIN-MAX Tree', 18, 5, 481)
             pygame.display.update()
 

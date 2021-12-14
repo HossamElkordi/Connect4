@@ -21,7 +21,7 @@ class TreeNode:
 
 
 def plot_tree(r, depth):
-    plt.figure(3, figsize=((40) * (depth + 1), (40) * (depth + 1)), dpi=40)
+    plt.figure(3, figsize=(40 * (depth + 1), 40 * (depth + 1)), dpi=40)
     g = nx.DiGraph()
     g.add_node(0, value=r.value())
     node_labels = {0: r.value()}
@@ -45,40 +45,3 @@ def traverse(child, g, node_labels):
         g.add_weighted_edges_from([(child[0], child[0] * 10 + i, n.col + 1)], weight='col')
         traverse((child[0] * 10 + i, n), g, node_labels)
         i += 1
-
-
-def check_row(board, window, col_pos, i, val):
-    if not val and \
-            (col_pos[window[1]] >= i or col_pos[window[1] + 1] >= i or col_pos[window[1] + 2] >= i or col_pos[window[1] + 3] >= i):
-        return 0
-    if board[i, window[1]] == val and board[i, window[1] + 1] == val and board[i, window[1] + 2] == val and board[i, window[1] + 3] == val:
-        return 1
-    return 0
-
-
-def check_col(board, window, col_pos, j, val):
-    if col_pos[window[1]] < window[0] - 4 and \
-            board[window[1], j] == val and board[window[1] + 1, j] == val and board[window[1] + 2, j] == val and board[window[1] + 3, j] == val:
-        return 1
-    return 0
-
-
-def check_diagonals(board, window, col_pos, val):
-    pts = 0
-    if window[0, 0] == val and window[1, 1] == val and window[2, 2] == val and window[3, 3] == val:
-        pts += 1
-    if window[0, 3] == val and window[1, 2] == val and window[2, 1] == val and window[3, 0] == val:
-        pts += 1
-    return pts
-
-
-def calc_pts(board, val, all_cols=False):
-    pts = 0
-    for i in range(5, 2, -1):
-        for j in range(4):
-            pass
-
-
-if __name__ == '__main__':
-    print([i for i in range(3)])
-
