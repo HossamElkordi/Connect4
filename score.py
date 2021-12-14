@@ -440,12 +440,12 @@ class ScoreScheme:
                                 else:
                                     score += 90
                                     start += 3
-                            elif i + start + 3 >= 0 and start + 3 <= 5 and b[start + 3][
+                            elif i + start + 3 <7 and start + 3 <6 and b[start + 3][
                                 i + start + 3] == 0 and self.is_avail(b, start + 3, i + start + 3):
                                 score += 90
                                 start += 4
                             elif (start - 1 >= 0 and i + start - 1 >= 0 and b[start - 1][i + start - 1] == 0) or (
-                                    i + start + 3 <= 6 and start + 3 <= 5 and b[start + 3][i + start + 3] == 0):
+                                    i + start + 3 <7 and start + 3 <6 and b[start + 3][i + start + 3] == 0):
                                 score += 40
                                 start += 3
                             # else:
