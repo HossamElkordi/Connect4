@@ -13,7 +13,7 @@ class ScoreScheme:
         return self.min_max(board, self.max_depth, True, -1) if self.scheme == 'min_max' \
             else self.min_max(board, self.max_depth, True, -1, -inf, inf)
 
-    def min_max(self, board: Board, depth, player, alpha=None, beta=None):
+    def min_max(self, board: Board, depth, player, col, alpha=None, beta=None):
         if depth == 0:
             h = self.calculate_heuristic(board)
             node = TreeNode(h, None, -1, col)
@@ -24,7 +24,7 @@ class ScoreScheme:
             root = self.min_val(board, depth, col, alpha, beta)
         return root
 
-    def max_val(self, board: Board, depth, alpha=None, beta=None):
+    def max_val(self, board: Board, depth, col, alpha=None, beta=None):
         val = -inf
         children = []
         branch = -1
@@ -44,7 +44,7 @@ class ScoreScheme:
                 alpha = max(val, alpha)
         return TreeNode(val, children, branch, col)
 
-    def min_val(self, board: Board, depth, alpha=None, beta=None):
+    def min_val(self, board: Board, depth, col, alpha=None, beta=None):
         val = inf
         children = []
         branch = -1
