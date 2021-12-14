@@ -93,11 +93,11 @@ class ScoreScheme:
         score = 0
         b = self.board_conv(board)
         #print(b)
-        for i in range(5 - int(np.amin(board.col_pos))):
+        for i in range(6 - int(np.amin(board.col_pos))):
             start = 0
             flag = 0
             wnds = 4
-            while start + 3 < 7:
+            while start + 3 < 7 :
                 if b[i][start] == 1 and b[i][start + 1] == 1 and b[i][start + 2] == 1 and b[i][start + 3] == 1:
                     score = score + 500
                     flag = 1
@@ -118,14 +118,14 @@ class ScoreScheme:
                     start + 3] == -1:
                     score = score - 120
                     start += 2
-                if b[i][start] == 1 and (
+                if start + 3 < 7 and b[i][start] == 1 and (
                         (b[i][start + 1] == 1 and b[i][start + 2] == 0 and not self.is_avail(b, i, start + 2)) or (
                         b[i][start + 2] == 1 and b[i][start + 1] == 0 and not self.is_avail(b, i, start + 1))) and b[i][
                     start + 3] == 1:
                     score = score + 40
                     start += 2
                 #print(i,start)
-                if b[i][start] == -1 and (
+                if start + 3 < 7 and  b[i][start] == -1 and (
                         (b[i][start + 1] == -1 and b[i][start + 2] == 0 and not self.is_avail(b, i, start + 2)) or (
                         b[i][start + 2] == -1 and b[i][start + 1] == 0 and not self.is_avail(b, i, start + 1))) and \
                         b[i][start + 3] == -1:
@@ -338,7 +338,7 @@ class ScoreScheme:
                             start+=1
                     start = 0
                     wnds = 2
-                    while i - start - 1 >= 0:
+                    while i - start - 1 >= 0 and start+1<6:
                         if b[start][i - start] == 1 and b[start+1][i - start - 1] == 1 and not (
                                 (start > 0 and b[start - 1][i - start + 1] == 1) or (
                                 start + 2 <= 5 and b[start + 2][i - start - 2] == 1)):
@@ -521,7 +521,7 @@ class ScoreScheme:
         for i in range(6):
             for j in range(7):
                 if b[i][j]==-1:
-                    score+=ones_matrix[i][j] * b[i][j]
+                    score+=1.5*ones_matrix[i][j] * b[i][j]
                 else:
                     score += ones_matrix[i][j] * b[i][j]
         #print(score)
