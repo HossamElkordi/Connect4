@@ -40,7 +40,7 @@ def traverse(child, g, node_labels):
     for n in child[1].children():
         g.add_node(child[0] * 10 + i, value=n.value())
         node_labels[child[0] * 10 + i] = n.value()
-        g.add_weighted_edges_from([(child[0], child[0] * 10 + i, n.col)], weight='col')
+        g.add_weighted_edges_from([(child[0], child[0] * 10 + i, n.col + 1)], weight='col')
         traverse((child[0] * 10 + i, n), g, node_labels)
         i += 1
 

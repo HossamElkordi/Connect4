@@ -10,18 +10,18 @@ class ScoreScheme:
         self.max_depth = max_depth
 
     def score(self, board: Board):
-        return self.min_max(board, self.max_depth, True) if self.scheme == 'min_max' \
-            else self.min_max(board, self.max_depth, True, -inf, inf)
+        return self.min_max(board, self.max_depth, True, -1) if self.scheme == 'min_max' \
+            else self.min_max(board, self.max_depth, True, -1, -inf, inf)
 
     def min_max(self, board: Board, depth, player, col, alpha=None, beta=None):
         if depth == 0:
             h = self.calculate_heuristic(board)
-            node = TreeNode(h, None, -1)
+            node = TreeNode(h, None, -1, col)
             return node
         if player:
-            root = self.max_val(board, depth, alpha, beta)
+            root = self.max_val(board, depth, col, alpha, beta)
         else:
-            root = self.min_val(board, depth, alpha, beta)
+            root = self.min_val(board, depth, col, alpha, beta)
         return root
 
     def max_val(self, board: Board, depth, col, alpha=None, beta=None):
@@ -33,16 +33,16 @@ class ScoreScheme:
                 continue
             b = board.clone()
             b.set_piece(i, True)
-            children.append(self.min_max(b, depth - 1, False, alpha, beta))
+            children.append(self.min_max(b, depth - 1, False, i, alpha, beta))
             old = val
             val = max(val, children[-1].value())
             if val != old:
                 branch = i
             if alpha is not None and beta is not None:
                 if val >= beta:
-                    return TreeNode(val, children, branch)
+                    return TreeNode(val, children, branch, col)
                 alpha = max(val, alpha)
-        return TreeNode(val, children, branch)
+        return TreeNode(val, children, branch, col)
 
     def min_val(self, board: Board, depth, col, alpha=None, beta=None):
         val = inf
@@ -53,16 +53,16 @@ class ScoreScheme:
                 continue
             b = board.clone()
             b.set_piece(i, False)
-            children.append(self.min_max(b, depth - 1, True, alpha, beta))
+            children.append(self.min_max(b, depth - 1, True, i, alpha, beta))
             old = val
             val = min(val, children[-1].value())
             if val != old:
                 branch = i
             if alpha is not None and beta is not None:
                 if val <= alpha:
-                    return TreeNode(val, children, branch)
+                    return TreeNode(val, children, branch, col)
                 beta = min(val, beta)
-        return TreeNode(val, children, branch)
+        return TreeNode(val, children, branch, col)
 
     def board_conv(self, board: Board):
         # -1 human  1 computer   0 vacant
