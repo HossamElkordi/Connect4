@@ -4,12 +4,13 @@ from score import ScoreScheme
 from board import Board
 from menu import MainMenu
 from player import Player, Computer, Human
+from tree import plot_tree
 
 
 class Game:
     def __init__(self):
         pygame.init()
-        self.w, self.h = 492, 484
+        self.w, self.h = 492, 499
         self.screen = pygame.display.set_mode((self.w, self.h))
         pygame.display.set_caption('Connect-4')
         pygame.display.set_icon(pygame.image.load('res/Images/logo.png'))  # doesn't show in ubuntu
@@ -17,6 +18,7 @@ class Game:
         self.playing, self.running = False, True
         self.current_menu = MainMenu(self)
         self.scoring = None
+        self.root = None
 
     def game_loop(self, work):
         players = List[Player]
@@ -81,11 +83,17 @@ class Game:
                             break
                         elif e.key == pygame.K_ESCAPE:
                             self.playing = False
+                        elif e.key == pygame.K_SPACE:
+                            if self.root is not None:
+                                plot_tree(self.root, self.scoring.max_depth)
                 elif isinstance(players[turn], Computer):
-                    players[turn].update_board(game_board, self.scoring.score(game_board).branch())
+                    self.root = self.scoring.score(game_board)
+                    players[turn].update_board(game_board, self.root.branch())
                     turn = (turn + 1) % 2
 
             game_board.update_board()
+            if work < 3:
+                self.draw_text('Press SPACE to visualize the MIN-MAX Tree', 18, 5, 481)
             pygame.display.update()
 
     def draw_cols_lbls(self):
