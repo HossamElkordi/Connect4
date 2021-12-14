@@ -21,7 +21,7 @@ class TreeNode:
 
 
 def plot_tree(r, depth):
-    plt.figure(3, figsize=((100) * (depth + 1), (100) * (depth + 1)), dpi=40)
+    plt.figure(3, figsize=((40) * (depth + 1), (40) * (depth + 1)), dpi=40)
     g = nx.DiGraph()
     g.add_node(0, value=r.value())
     node_labels = {0: r.value()}
