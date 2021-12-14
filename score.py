@@ -29,6 +29,8 @@ class ScoreScheme:
         children = []
         branch = -1
         for i in range(7):
+            if board.col_pos[i]<0:
+                continue
             b = board.clone()
             b.set_piece(i, True)
             children.append(self.min_max(b, depth - 1, False, alpha, beta))
@@ -47,6 +49,8 @@ class ScoreScheme:
         children = []
         branch = -1
         for i in range(7):
+            if board.col_pos[i]<0:
+                continue
             b = board.clone()
             b.set_piece(i, False)
             children.append(self.min_max(b, depth - 1, True, alpha, beta))
