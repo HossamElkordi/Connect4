@@ -33,6 +33,7 @@ class Game:
             players = [Human(), Human(True)]
         turn = 0
         game_board = Board(self.screen)
+        r, y = 0, 0
 
         while self.playing:
             self.screen.fill((255, 255, 255))
@@ -48,36 +49,43 @@ class Game:
                     if e.type == pygame.KEYDOWN:
                         if e.key == pygame.K_1:
                             players[turn].update_board(game_board, col=0)
+                            r, y = self.scoring.score_calc(game_board)
                             turn = (turn + 1) % 2
                             print(self.scoring.calculate_heuristic(game_board))
                             break
                         elif e.key == pygame.K_2:
                             players[turn].update_board(game_board, col=1)
+                            r, y = self.scoring.score_calc(game_board)
                             turn = (turn + 1) % 2
                             print(self.scoring.calculate_heuristic(game_board))
                             break
                         elif e.key == pygame.K_3:
                             players[turn].update_board(game_board, col=2)
+                            r, y = self.scoring.score_calc(game_board)
                             turn = (turn + 1) % 2
                             print(self.scoring.calculate_heuristic(game_board))
                             break
                         elif e.key == pygame.K_4:
                             players[turn].update_board(game_board, col=3)
+                            r, y = self.scoring.score_calc(game_board)
                             turn = (turn + 1) % 2
                             print(self.scoring.calculate_heuristic(game_board))
                             break
                         elif e.key == pygame.K_5:
                             players[turn].update_board(game_board, col=4)
+                            r, y = self.scoring.score_calc(game_board)
                             turn = (turn + 1) % 2
                             print(self.scoring.calculate_heuristic(game_board))
                             break
                         elif e.key == pygame.K_6:
                             players[turn].update_board(game_board, col=5)
+                            r, y = self.scoring.score_calc(game_board)
                             turn = (turn + 1) % 2
                             print(self.scoring.calculate_heuristic(game_board))
                             break
                         elif e.key == pygame.K_7:
                             players[turn].update_board(game_board, col=6)
+                            r, y = self.scoring.score_calc(game_board)
                             turn = (turn + 1) % 2
                             print(self.scoring.calculate_heuristic(game_board))
                             break
@@ -92,9 +100,9 @@ class Game:
                     turn = (turn + 1) % 2
 
             game_board.update_board()
+            self.draw_text('Red: ' + str(r) + '   Yellow: ' + str(y), 20, 200, 10)
             if work < 3:
                 r, y = self.scoring.score_calc(game_board)
-                self.draw_text('Red: ' + str(r) + '   Yellow: ' + str(y), 20, 200, 10)
                 self.draw_text('Press SPACE to visualize the MIN-MAX Tree', 18, 5, 481)
             pygame.display.update()
 
