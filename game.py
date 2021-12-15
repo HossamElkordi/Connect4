@@ -1,5 +1,6 @@
 from typing import List
 import pygame
+import time
 from score import ScoreScheme
 from board import Board
 from menu import MainMenu
@@ -95,7 +96,9 @@ class Game:
                             if self.root is not None:
                                 plot_tree(self.root, self.scoring.max_depth)
                 elif isinstance(players[turn], Computer):
+                    milliseconds = int(round(time.time() * 1000))
                     self.root = self.scoring.score(game_board)
+                    print ("time to expand", int(round(time.time() * 1000))-milliseconds," milliseconds")
                     players[turn].update_board(game_board, self.root.branch())
                     turn = (turn + 1) % 2
 
